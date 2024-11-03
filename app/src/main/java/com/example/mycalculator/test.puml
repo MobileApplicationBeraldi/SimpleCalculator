@@ -1,0 +1,49 @@
+@startuml
+class MainActivity {
+    + onCreate(savedInstanceState: Bundle?)
+}
+
+MainActivity --|> ComponentActivity
+MainActivity --> MyCalculatorTheme
+MainActivity --> Scaffold
+MainActivity --> Calculator
+class CalculatorViewModel {
+    - factorDBApi: FactorDBApi
+    - evaluateExpression(expression: String): Double
+    + getFactors(number: Long): List<String>
+}
+
+CalculatorViewModel --|> ViewModel
+CalculatorViewModel --> FactorDBApi
+
+class Calculator {
+    - input: String
+    - result: String
+    - myViewModel: CalculatorViewModel
+}
+
+Calculator --> CalculatorViewModel
+Calculator --|> Composable
+
+interface FactorDBApi {
+    + getFactors(number: Long): FactorDBResponse
+}
+
+class FactorDBResponse {
+    + id: String
+    + status: String
+    + factors: List<List<String>>
+}
+
+FactorDBApi ..> FactorDBResponse : returns
+
+object FactorDBClient {
+    - BASE_URL: String
+    - retrofit: Retrofit
+    + api: FactorDBApi
+}
+
+FactorDBClient --> FactorDBApi
+FactorDBClient ..> Retrofit
+
+@enduml

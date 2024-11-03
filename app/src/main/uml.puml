@@ -1,0 +1,65 @@
+@startuml
+
+class androidx.activity.ComponentActivity
+class androidx.compose.material3.Scaffold
+class retrofit2.Retrofit
+class androidx.lifecycle.ViewModel
+class android.app.Application
+
+class mycalculator.MyApplication
+
+class mycalculator.ui.uielements.MainActivity {
+    + onCreate(savedInstanceState: Bundle?)
+}
+
+class mycalculator.ui.theme.MyCalculatorTheme
+class mycalculator.ui.uielements.Calculator {
+    - input: String
+    - result: String
+    - myViewModel: CalculatorViewModel
+}
+
+
+class mycalculator.viewmodel.CalculatorViewModel {
+    - factorDBApi: FactorDBApi
+    - evaluateExpression(expression: String): Double
+    + getFactors(number: Long): List<String>
+}
+
+interface mycalculator.data.remote.FactorDBApi {
+    + getFactors(number: Long): FactorDBResponse
+}
+
+class mycalculator.data.remote.FactorDBResponse {
+    + id: String
+    + status: String
+    + factors: List<List<String>>
+}
+
+object mycalculator.data.remote.FactorDBClient {
+    - BASE_URL: String
+    - retrofit: Retrofit
+    + api: FactorDBApi
+}
+
+MyApplication -|> Application
+MyApplication ..> FactorDBClient : initializes
+
+MainActivity -|> ComponentActivity
+
+MainActivity --> MyCalculatorTheme
+MainActivity --> Scaffold
+MainActivity --> Calculator
+
+CalculatorViewModel --|> ViewModel
+CalculatorViewModel --> FactorDBApi
+
+Calculator --> CalculatorViewModel
+
+
+FactorDBApi ..> FactorDBResponse : returns
+
+
+FactorDBClient --> FactorDBApi
+FactorDBClient -> Retrofit
+@enduml
